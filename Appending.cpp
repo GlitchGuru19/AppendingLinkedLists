@@ -2,79 +2,140 @@
 
 using namespace std;
 
-class Node
+class Person
 {
-public:
+private:
     string name;
+    int age;
     string sin;
-    Node *next;
+    Person* next;
+
+public:
+    // Constructor
+    Person(string n, int a, string s)
+    {
+        this->name = n;
+        this->age = a;
+        this->sin = s;
+        this->next = nullptr;
+        cout << "Object created" << endl<< endl;
+    }
+
+    // Getters
+    string getName() { return name; }
+    int getAge() { return age; }
+    string getSIN() { return sin; }
+    Person* getNext() { return next; }
+
+    // Setters
+    void setName(string n) { name = n; }
+    void setAge(int a) { age = a; }
+    void setSIN(string s) { sin = s; }
+    void setNext(Person* n) { next = n; }
+
+    void display()
+    {
+        cout << "Name: " << name << "\nAge: " << age << "\nSIN: " << sin << endl;
+    }
 };
 
-void appendNode(Node *&head, string name, string sin)
+class PersonList
 {
-    Node *newNode = new Node;
-    Node *nodePtr = nullptr;
+private:
+    Person* head;
 
-    newNode->name = name;
-    newNode->sin = sin;
-    newNode->next = nullptr;
+public:
+    PersonList() : head(nullptr) {}
 
-    if(head == nullptr)
+    // Add a new person at the end of the list
+    void appendNode(string name, int age, string sin)
     {
-        head =newNode;
-    }
-    else
-    {
-        nodePtr = head;
-        while(nodePtr->next)
+        Person* newPerson = new Person(name, age, sin);
+
+        if (head == nullptr)
         {
-            nodePtr = nodePtr->next;
+            head = newPerson;
         }
-        nodePtr->next =newNode;
+        else
+        {
+            Person* current = head;
+            while (current->getNext() != nullptr)
+            {
+                current = current->getNext();
+            }
+            current->setNext(newPerson);
+        }
     }
 
-}
-
-void displayDetails(Node *&head)
-{
-    Node *current = nullptr;
-    current = head;
-    cout << "\n\nNames in the List" << endl << endl;
-    while(current)
+    void displayAll()
     {
-        cout << current->name << endl;
-        cout << current->sin << endl;
-        current = current->next;
+        Person* current = head;
+        cout << "\n\nNames in the List" << endl << endl;
+        while (current != nullptr)
+        {
+            current->display();
+            cout << "------------------" << endl;
+            current = current->getNext();
+        }
     }
-}
+
+    ~PersonList()
+    {
+        Person* current = head;
+        while (current != nullptr)
+        {
+            Person* next = current->getNext();
+            delete current;
+            current = next;
+            cout << "Object deleted" << endl;
+        }
+    }
+};
 
 int main()
 {
-    Node *head = nullptr;
+    PersonList* list = new PersonList(); // Dynamic allocation
 
     int choice = 0;
     string name = "";
+    int age = 0;
     string sin = "";
-    while(true)
+    while (true)
     {
         cout << "1. Add Name" << endl;
         cout << "2. Display Names" << endl;
+        cout << "3. Exit" << endl;
         cout << "Choice => ";
         cin >> choice;
-        switch(choice)
+        cin.ignore(); // Clear input buffer
+
+        switch (choice)
         {
-        case 1:
+            case 1:
             {
-                cout<< "Enter name = ";
-                cin >> name;
-                cout << "Enter SIN = ";
-                cin >> sin;
-                appendNode(head, name, sin);
+                cout << "Enter name: ";
+                getline(cin, name);
+                cout << "Enter age: ";
+                cin >> age;
+                cin.ignore();
+                cout << "Enter SIN: ";
+                getline(cin, sin);
+                list->appendNode(name, age, sin); // Use -> operator
                 break;
             }
-        case 2:
+            case 2:
             {
-                displayDetails(head);
+                list->displayAll(); // Use -> operator
+                break;
+            }
+            case 3:
+            {
+                delete list; // Clean up dynamic memory
+                return 0;
+            }
+            default:
+            {
+                cout << "Invalid choice!" << endl;
                 break;
             }
         }
